@@ -27,7 +27,7 @@ export const checkAgencyCodeStatus = (body: CheckAgencyCodeRequest) => {
 };
 
 export const getInsuranceBranches = (query?: string) => {
-  httpClient.get<InsuranceBranchResponse>(
+  return httpClient.get<InsuranceBranchResponse>(
     "/api/v2/app/selection_item/insurance_branch/wop_list/",
     {
       params: {

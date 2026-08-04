@@ -33,6 +33,15 @@ const buttonVariants = cva(
           focus-visible:ring-3
           focus-visible:ring-primary-500/30
         `,
+
+        ghost: `
+          bg-transparent
+          text-gray-600
+          hover:bg-gray-100
+          hover:text-gray-900
+          focus-visible:ring-3
+          focus-visible:ring-gray-400/20
+        `,
       },
 
       size: {

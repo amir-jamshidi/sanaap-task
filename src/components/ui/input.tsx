@@ -17,7 +17,7 @@ function Input({
   isSuccess?: boolean;
 }) {
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <InputPrimitive
         type={type}
         data-slot="input"

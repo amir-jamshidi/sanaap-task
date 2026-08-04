@@ -2,30 +2,54 @@ import { useDebounce } from "@/hooks/useDebounce";
 import {
   useCheckAgencyCodeStatus,
   useGetCitiesByProvinceID,
+  useGetInsuranceBranches,
   useGetProvinces,
 } from "./use-register-agent";
 import { useForm, useWatch } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const useRegisterAgentForm = () => {
+  const [branchSearchQuery, setBranchSearchQuery] = useState("");
+
   const form = useForm({
     defaultValues: {
-      code: "",
-      provinceId: "",
+      address: "",
+      agent_code: "",
+      agency_type: "real", // "real"|"legal"
+      city_code: "",
+      county: "",
+      first_name: "",
+      insurance_branch: "",
+      lastname: "",
+      phone: "",
+      province: "",
+      name: "",
     },
   });
 
   const code = useWatch({
     control: form.control,
-    name: "code",
+    name: "agent_code",
+  });
+
+  const agencyType = useWatch({
+    control: form.control,
+    name: "agency_type",
   });
 
   const provinceId = useWatch({
     control: form.control,
-    name: "provinceId",
+    name: "province",
   });
 
   const debouncedCode = useDebounce(code.trim(), 700);
+  const debouncedBrachSearchQuery = useDebounce(branchSearchQuery.trim(), 700);
+
+  const {
+    data: branchDetails,
+    isPending: branchesIsPending,
+    isError: branchesIsError,
+  } = useGetInsuranceBranches(debouncedBrachSearchQuery);
 
   const {
     data: provinces = [],
@@ -68,6 +92,11 @@ export const useRegisterAgentForm = () => {
       label: province.name,
     })) ?? [];
 
+  const branchOptions = branchDetails?.response.map((branch) => ({
+    value: branch.id,
+    label: branch.name,
+  }));
+
   return {
     provinceData,
     provinceIsPending,
@@ -79,10 +108,19 @@ export const useRegisterAgentForm = () => {
 
     form,
 
+    isLegalPerson: agencyType === "legal",
+
     checkAgencyDetails: {
       isPending: agencyStatusIsPending,
       isError: agencyStatusIsError,
       isSuccess: agencyStatus?.is_success,
+    },
+
+    branchDetails: {
+      branchOptions,
+      isPending: branchesIsPending,
+      isError: branchesIsError,
+      setBranchSearchQuery,
     },
   };
 };
