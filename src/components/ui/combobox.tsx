@@ -5,6 +5,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react";
 import {
   CheckIcon,
   ChevronDownIcon,
+  LoaderCircle,
   XIcon,
 } from "lucide-react";
 
@@ -127,11 +128,13 @@ function ComboboxInput({
   showTrigger = true,
   showClear = false,
   error,
+  isLoading,
   ...props
 }: ComboboxPrimitive.Input.Props & {
   showTrigger?: boolean;
   showClear?: boolean;
   error?: string;
+  isLoading?: boolean;
 }) {
   const anchorRef = React.useContext(
     ComboboxAnchorContext,
@@ -241,7 +244,9 @@ function ComboboxInput({
               shadow-none!
             "
           >
-            {showTrigger && (
+            {isLoading ? (
+              <LoaderCircle className="pointer-events-none size-5 animate-spin text-gray-500" />
+            ) : showTrigger && (
               <InputGroupButton
                 size="icon-xs"
                 variant="ghost"
@@ -264,7 +269,7 @@ function ComboboxInput({
               />
             )}
 
-            {showClear && (
+            {!isLoading && showClear && (
               <ComboboxClear disabled={disabled} />
             )}
           </InputGroupAddon>

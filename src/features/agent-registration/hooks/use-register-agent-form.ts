@@ -1,11 +1,19 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import {
+  type Resolver,
+  type SubmitHandler,
+  useForm,
+  useWatch,
+} from "react-hook-form";
+import { toast } from "sonner";
 import {
   registerAgentSchema,
+  type RegisterAgentFormInputValues,
   type RegisterAgentFormValues,
 } from "../schemas/agent-registration-schema";
+import type { RegisterAgentRequest } from "../types/agent-registration.types";
 import {
   useCheckAgencyCodeStatus,
   useGetCitiesByProvinceID,
@@ -16,9 +24,18 @@ import {
 
 export const useRegisterAgentForm = () => {
   const [branchSearchQuery, setBranchSearchQuery] = useState("");
+  const isFirstCityChange = useRef(true);
 
-  const form = useForm<RegisterAgentFormValues>({
-    resolver: zodResolver(registerAgentSchema),
+  const form = useForm<
+    RegisterAgentFormInputValues,
+    unknown,
+    RegisterAgentFormValues
+  >({
+    resolver: zodResolver(registerAgentSchema) as Resolver<
+      RegisterAgentFormInputValues,
+      unknown,
+      RegisterAgentFormValues
+    >,
     defaultValues: {
       address: "",
       agent_code: "",
@@ -71,7 +88,7 @@ export const useRegisterAgentForm = () => {
 
   const {
     data: cities = [],
-    isPending: citiesIsPending,
+    isFetching: citiesIsFetching,
     isError: citiesIsError,
   } = useGetCitiesByProvinceID(provinceId ? Number(provinceId) : 0);
 
@@ -83,8 +100,9 @@ export const useRegisterAgentForm = () => {
     reset: resetAgencyStatus,
   } = useCheckAgencyCodeStatus();
 
-  const { mutateAsync: registerAgentFn, isPending } = useRegisterAgent();
-  console.log(isPending);
+  const { mutateAsync: registerAgentFn, isPending: isSubmitting } =
+    useRegisterAgent();
+  console.log(isSubmitting);
   useEffect(() => {
     if (!debouncedCode) {
       resetAgencyStatus();
@@ -93,6 +111,15 @@ export const useRegisterAgentForm = () => {
 
     checkAgencyStatus(debouncedCode);
   }, [debouncedCode, checkAgencyStatus, resetAgencyStatus]);
+
+  useEffect(() => {
+    if (isFirstCityChange.current) {
+      isFirstCityChange.current = false;
+      return;
+    }
+
+    form.setValue("insurance_branch", -1);
+  }, [ciryId, form]);
 
   const provinceData =
     provinces?.map((province) => ({
@@ -111,21 +138,36 @@ export const useRegisterAgentForm = () => {
     label: branch.name,
   }));
 
-  const onSubmit = (values) => {
+  const onSubmit: SubmitHandler<RegisterAgentFormValues> = (values) => {
     console.log("values", values);
-    registerAgentFn(values);
+
+    if (agencyStatus?.is_success === false) {
+      toast.error(`کد نمایندگی ${values.agent_code} قبلا ثبت شده است`);
+      return;
+    }
+
+    const payload: RegisterAgentRequest = {
+      ...values,
+      first_name: "firstNameTest",
+      last_name: "lastNameTest",
+      phone_number: `${values.city_code}${values.phone}`,
+      name: values.name || "nameTest",
+    };
+
+    registerAgentFn(payload);
   };
 
   return {
     form,
-    disableCity: !provinceId || provinceIsPending || citiesIsPending,
+    disableCity: !provinceId || provinceIsPending || citiesIsFetching,
     disableBranch: !ciryId,
+    isSubmitting,
     //--
     isLegalPerson: agencyType === "legal",
     //--
     citiesDetails: {
       citiesData,
-      isPending: citiesIsPending,
+      isPending: Boolean(provinceId) && citiesIsFetching,
       isError: citiesIsError,
     },
     //--

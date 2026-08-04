@@ -30,6 +30,7 @@ const RegisterAgentForm = () => {
     isLegalPerson,
     disableBranch,
     disableCity,
+    isSubmitting,
     provinceDetails,
     citiesDetails,
     onSubmit,
@@ -49,6 +50,7 @@ const RegisterAgentForm = () => {
             isError={checkAgencyDetails.isError}
             isSuccess={checkAgencyDetails.isSuccess}
             placeholder="کد نمایندگی"
+            disabled={checkAgencyDetails.isPending || isSubmitting}
             error={form.formState.errors.agent_code?.message}
           />
 
@@ -57,11 +59,15 @@ const RegisterAgentForm = () => {
             name="province"
             render={({ field }) => (
               <Select
+                disabled={isSubmitting}
                 items={provinceDetails.provinceData}
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger error={form.formState.errors.province?.message}>
+                <SelectTrigger
+                  isLoading={provinceDetails.isPending}
+                  error={form.formState.errors.province?.message}
+                >
                   <SelectValue placeholder="استان" />
                 </SelectTrigger>
 
@@ -83,12 +89,15 @@ const RegisterAgentForm = () => {
             name="county"
             render={({ field }) => (
               <Select
-                disabled={disableCity}
+                disabled={disableCity || isSubmitting}
                 items={citiesDetails.citiesData}
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger error={form.formState.errors.county?.message}>
+                <SelectTrigger
+                  isLoading={citiesDetails.isPending}
+                  error={form.formState.errors.county?.message}
+                >
                   <SelectValue placeholder="شهر" />
                 </SelectTrigger>
 
@@ -106,6 +115,7 @@ const RegisterAgentForm = () => {
           />
           <Textarea
             {...form.register("address")}
+            disabled={isSubmitting}
             error={form.formState.errors.address?.message}
             legend="آدرس"
           />
@@ -120,7 +130,7 @@ const RegisterAgentForm = () => {
 
               return (
                 <Combobox
-                  disabled={disableBranch}
+                  disabled={disableBranch || isSubmitting}
                   virtualized
                   items={branchDetails.branchOptions}
                   value={selectedBranch}
@@ -138,6 +148,10 @@ const RegisterAgentForm = () => {
                   }}
                 >
                   <ComboboxInput
+                    isLoading={branchDetails.isPending}
+                    disabled={
+                      disableBranch || branchDetails.isPending || isSubmitting
+                    }
                     error={form.formState.errors.insurance_branch?.message}
                     placeholder="جستجو و انتخاب شعبه"
                     showTrigger
@@ -172,23 +186,25 @@ const RegisterAgentForm = () => {
             }}
           />
 
-          <div className="flex gap-x-4 ">
-            <Input
-              error={form.formState.errors.phone?.message}
-              dir="ltr"
-              type="number"
-              {...form.register("phone")}
-              className="flex-3"
-              placeholder="شماره ثابت"
-              isLtrContent
-            />
+          <div dir="ltr" className="flex gap-x-4 ">
             <Input
               error={form.formState.errors.city_code?.message}
               dir="ltr"
               type="number"
               {...form.register("city_code")}
+              disabled={isSubmitting}
               className="flex-1"
               placeholder="پیش شماره"
+              isLtrContent
+            />
+            <Input
+              error={form.formState.errors.phone?.message}
+              dir="ltr"
+              type="number"
+              {...form.register("phone")}
+              disabled={isSubmitting}
+              className="flex-3"
+              placeholder="شماره ثابت"
               isLtrContent
             />
           </div>
@@ -203,6 +219,7 @@ const RegisterAgentForm = () => {
                   <RadioGroup
                     value={field.value}
                     onValueChange={field.onChange}
+                    disabled={isSubmitting}
                     dir="rtl"
                     className="flex items-center gap-6"
                   >
@@ -237,11 +254,14 @@ const RegisterAgentForm = () => {
               {...form.register("name", {
                 shouldUnregister: true,
               })}
+              disabled={isSubmitting}
               error={form.formState.errors.name?.message}
               placeholder="نام نمایندگی"
             />
           )}
-          <Button type="submit">ثبت نام</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            ثبت نام
+          </Button>
         </div>
       </form>
     </div>

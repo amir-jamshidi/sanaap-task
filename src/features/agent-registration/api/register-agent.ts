@@ -40,7 +40,7 @@ export const getInsuranceBranches = (query?: string) => {
 };
 
 export const registerAgent = (body: RegisterAgentRequest) => {
-  httpClient.post<RegisterAgentResponse, RegisterAgentRequest>(
+  return httpClient.post<RegisterAgentResponse, RegisterAgentRequest>(
     "/api/v2/app/DEY/agent/verification/signup/",
     body,
   );

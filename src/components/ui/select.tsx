@@ -2,7 +2,12 @@ import * as React from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 
 import { cn } from "@/lib/utils";
-import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  CheckIcon,
+  ChevronUpIcon,
+  LoaderCircle,
+} from "lucide-react";
 
 const Select = SelectPrimitive.Root;
 
@@ -33,10 +38,12 @@ function SelectTrigger({
   className,
   children,
   error,
+  isLoading,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: "sm" | "default";
   error?: string;
+  isLoading?: boolean;
 }) {
   return (
     <div className="relative pb-6">
@@ -67,11 +74,15 @@ function SelectTrigger({
       >
         {children}
 
-        <SelectPrimitive.Icon
-          render={
-            <ChevronDownIcon className="pointer-events-none size-4 text-gray-400" />
-          }
-        />
+        {isLoading ? (
+          <LoaderCircle className="pointer-events-none size-5 animate-spin text-gray-500" />
+        ) : (
+          <SelectPrimitive.Icon
+            render={
+              <ChevronDownIcon className="pointer-events-none size-4 text-gray-400" />
+            }
+          />
+        )}
       </SelectPrimitive.Trigger>
       {error && (
         <span className="absolute bottom-0 right-0 text-xs text-red-500">
