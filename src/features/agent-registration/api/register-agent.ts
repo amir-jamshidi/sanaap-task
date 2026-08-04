@@ -5,6 +5,8 @@ import type {
   City,
   InsuranceBranchResponse,
   Province,
+  RegisterAgentRequest,
+  RegisterAgentResponse,
 } from "../types/agent-registration.types";
 
 export const getProvinces = () => {
@@ -34,5 +36,12 @@ export const getInsuranceBranches = (query?: string) => {
         name: query,
       },
     },
+  );
+};
+
+export const registerAgent = (body: RegisterAgentRequest) => {
+  httpClient.post<RegisterAgentResponse, RegisterAgentRequest>(
+    "/api/v2/app/DEY/agent/verification/signup/",
+    body,
   );
 };

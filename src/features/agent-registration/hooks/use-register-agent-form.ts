@@ -1,17 +1,18 @@
 import { useDebounce } from "@/hooks/useDebounce";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import {
+  registerAgentSchema,
+  type RegisterAgentFormValues,
+} from "../schemas/agent-registration-schema";
 import {
   useCheckAgencyCodeStatus,
   useGetCitiesByProvinceID,
   useGetInsuranceBranches,
   useGetProvinces,
+  useRegisterAgent,
 } from "./use-register-agent";
-import { useForm, useWatch } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  registerAgentSchema,
-  type RegisterAgentFormValues,
-} from "../schemas/agent-registration-schema";
 
 export const useRegisterAgentForm = () => {
   const [branchSearchQuery, setBranchSearchQuery] = useState("");
@@ -24,16 +25,14 @@ export const useRegisterAgentForm = () => {
       agency_type: "real", // "real"|"legal"
       city_code: "",
       county: "",
-      first_name: "",
-      insurance_branch: "",
-      lastname: "",
+      insurance_branch: -1,
       phone: "",
       province: "",
       name: "",
     },
   });
 
-  console.log(form.formState.errors)
+  console.log(form.formState.errors);
 
   const code = useWatch({
     control: form.control,
@@ -84,6 +83,8 @@ export const useRegisterAgentForm = () => {
     reset: resetAgencyStatus,
   } = useCheckAgencyCodeStatus();
 
+  const { mutateAsync: registerAgentFn, isPending } = useRegisterAgent();
+  console.log(isPending);
   useEffect(() => {
     if (!debouncedCode) {
       resetAgencyStatus();
@@ -110,32 +111,42 @@ export const useRegisterAgentForm = () => {
     label: branch.name,
   }));
 
+  const onSubmit = (values) => {
+    console.log("values", values);
+    registerAgentFn(values);
+  };
+
   return {
-    provinceData,
-    provinceIsPending,
-    provinceIsError,
-
-    citiesData,
-    citiesIsPending,
-    citiesIsError,
-
     form,
     disableCity: !provinceId || provinceIsPending || citiesIsPending,
     disableBranch: !ciryId,
-
+    //--
     isLegalPerson: agencyType === "legal",
-
+    //--
+    citiesDetails: {
+      citiesData,
+      isPending: citiesIsPending,
+      isError: citiesIsError,
+    },
+    //--
+    provinceDetails: {
+      provinceData,
+      isPending: provinceIsPending,
+      isError: provinceIsError,
+    },
+    //--
     checkAgencyDetails: {
       isPending: agencyStatusIsPending,
       isError: agencyStatusIsError,
       isSuccess: agencyStatus?.is_success,
     },
-
+    //--
     branchDetails: {
       branchOptions,
       isPending: branchesIsPending,
       isError: branchesIsError,
       setBranchSearchQuery,
     },
+    onSubmit,
   };
 };

@@ -7,12 +7,10 @@ export const registerAgentSchema = z
     agency_type: z.enum(["real", "legal"]),
     city_code: z.string().trim().min(1, "کد شهر الزامی است"),
     county: z.string().trim().min(1, "انتخاب شهرستان الزامی است"),
-    // first_name: z.string().trim().min(1, "نام الزامی است"),
     insurance_branch: z.number().min(1, "انتخاب شعبه بیمه الزامی است"),
-    // last_name: z.string().trim().min(1, "نام خانوادگی الزامی است"),
     phone: z.string().trim().min(1, "شماره موبایل الزامی است"),
     province: z.string().trim().min(1, "انتخاب استان الزامی است"),
-    name: z.string().trim(),
+    name: z.string().trim().min(1, "نام نمایندگی الزامی است"),
   })
   .refine(
     (values) => {

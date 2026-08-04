@@ -22,6 +22,9 @@ const ComboboxAnchorContext =
     null,
   );
 
+const ComboboxDisabledContext =
+  React.createContext(false);
+
 function Combobox<
   Value,
   Multiple extends boolean | undefined = false,
@@ -29,11 +32,14 @@ function Combobox<
   props: ComboboxPrimitive.Root.Props<Value, Multiple>,
 ) {
   const anchorRef = React.useRef<HTMLDivElement>(null);
+  const isDisabled = Boolean(props.disabled);
 
   return (
-    <ComboboxAnchorContext.Provider value={anchorRef}>
-      <ComboboxPrimitive.Root {...props} />
-    </ComboboxAnchorContext.Provider>
+    <ComboboxDisabledContext.Provider value={isDisabled}>
+      <ComboboxAnchorContext.Provider value={anchorRef}>
+        <ComboboxPrimitive.Root {...props} />
+      </ComboboxAnchorContext.Provider>
+    </ComboboxDisabledContext.Provider>
   );
 }
 
@@ -117,7 +123,7 @@ function ComboboxClear({
 function ComboboxInput({
   className,
   children,
-  disabled = false,
+  disabled: disabledProp,
   showTrigger = true,
   showClear = false,
   error,
@@ -130,6 +136,12 @@ function ComboboxInput({
   const anchorRef = React.useContext(
     ComboboxAnchorContext,
   );
+
+  const rootDisabled = React.useContext(
+    ComboboxDisabledContext,
+  );
+
+  const disabled = disabledProp ?? rootDisabled;
 
   return (
     <div className="relative w-full pb-6">
@@ -172,10 +184,9 @@ function ComboboxInput({
               data-error:border-red-500
               data-error:focus-within:border-red-500
 
-              data-disabled:pointer-events-none
               data-disabled:cursor-not-allowed
-              data-disabled:border-gray-300
-              data-disabled:bg-gray-300
+              data-disabled:bg-input/50
+              data-disabled:opacity-50
             `,
             className,
           )}
@@ -184,6 +195,7 @@ function ComboboxInput({
             render={
               <InputGroupInput disabled={disabled} />
             }
+            disabled={disabled}
             aria-invalid={error ? true : undefined}
             className={cn(
               `

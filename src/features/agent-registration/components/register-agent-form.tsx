@@ -24,27 +24,24 @@ import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
 
 const RegisterAgentForm = () => {
   const {
-    provinceData,
-    citiesData,
     form,
     checkAgencyDetails,
     branchDetails,
     isLegalPerson,
     disableBranch,
     disableCity,
+    provinceDetails,
+    citiesDetails,
+    onSubmit,
   } = useRegisterAgentForm();
-
-  const submit = (values) => {
-    console.log(values);
-  };
 
   return (
     <div>
       <div className="flex justify-center items-center">
         <p className="text-white font-semibold text-2xl">بیـــــــــــمه دی</p>
       </div>
-      <form onSubmit={form.handleSubmit(submit)}>
-        <div className="flex flex-col gap-y-10 bg-white mx-8 px-6 mt-4 py-8 shadow-lg rounded-xl">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="flex flex-col gap-y-5 bg-white mx-8 px-6 mt-4 py-8 shadow-lg rounded-xl">
           <Input
             {...form.register("agent_code")}
             type="number"
@@ -60,7 +57,7 @@ const RegisterAgentForm = () => {
             name="province"
             render={({ field }) => (
               <Select
-                items={provinceData}
+                items={provinceDetails.provinceData}
                 value={field.value}
                 onValueChange={field.onChange}
               >
@@ -70,7 +67,7 @@ const RegisterAgentForm = () => {
 
                 <SelectContent side="bottom">
                   <SelectGroup>
-                    {provinceData.map((item) => (
+                    {provinceDetails.provinceData.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>
@@ -87,7 +84,7 @@ const RegisterAgentForm = () => {
             render={({ field }) => (
               <Select
                 disabled={disableCity}
-                items={citiesData}
+                items={citiesDetails.citiesData}
                 value={field.value}
                 onValueChange={field.onChange}
               >
@@ -97,7 +94,7 @@ const RegisterAgentForm = () => {
 
                 <SelectContent side="bottom">
                   <SelectGroup>
-                    {citiesData.map((item) => (
+                    {citiesDetails.citiesData.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>
@@ -183,6 +180,7 @@ const RegisterAgentForm = () => {
               {...form.register("phone")}
               className="flex-3"
               placeholder="شماره ثابت"
+              isLtrContent
             />
             <Input
               error={form.formState.errors.city_code?.message}
@@ -191,6 +189,7 @@ const RegisterAgentForm = () => {
               {...form.register("city_code")}
               className="flex-1"
               placeholder="پیش شماره"
+              isLtrContent
             />
           </div>
 

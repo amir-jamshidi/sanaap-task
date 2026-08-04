@@ -57,9 +57,10 @@ function SelectTrigger({
           data-[popup-open]:ring-0
 
           disabled:cursor-not-allowed
-          disabled:opacity-75
-          disabled:bg-gray-200
+          disabled:bg-input/50
+          disabled:opacity-50
         `,
+          { "border-red-500": Boolean(error) },
           className,
         )}
         {...props}

@@ -67,3 +67,28 @@ export interface InsuranceBranchResponse {
     county: number;
   }[];
 }
+
+export interface RegisterAgentResponse {
+  status_code: number;
+  message: number;
+  is_success: boolean;
+  error_details: null;
+  response: {
+    refresh: string;
+    access: string;
+  };
+}
+export interface RegisterAgentRequest {
+  address: string;
+  agent_code: string;
+  agency_type: string;
+  city_code: string;
+  county: string;
+  first_name: string;
+  insurance_branch: number;
+  last_name: string;
+  phone_number: string;
+  phone: string;
+  province: string;
+  name: string;
+}

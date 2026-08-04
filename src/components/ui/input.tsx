@@ -7,26 +7,33 @@ import { cn } from "@/lib/utils";
 function Input({
   className,
   type,
+  dir,
   isLoading,
   isError,
   isSuccess,
   error,
   wrapperClassName,
-  ...props
+  isLtrContent = false,
+  ...props 
 }: React.ComponentProps<"input"> & {
   isLoading?: boolean;
   isError?: boolean;
   isSuccess?: boolean;
   error?: string;
   wrapperClassName?: string;
+  isLtrContent?:boolean
 }) {
   return (
     <div className={cn("relative w-full pb-6", wrapperClassName)}>
       <InputPrimitive
         type={type}
+        dir={isLtrContent? "rtl" : dir}
         data-slot="input"
         className={cn(
-          "h-12 w-full min-w-0 rounded-lg text-gray-700 border border-gray-400/70 bg-transparent px-2.5 py-1 focus:border-primary-500 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-gray-400 focus-visible:border-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+          "h-12 w-full min-w-0 rounded-lg text-gray-700 border border-gray-400/70 bg-transparent px-2.5 py-1 focus:border-primary-500 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-gray-400 focus-visible:border-ring disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+          isLtrContent &&
+            "text-left [&::placeholder]:text-right [&::placeholder]:[direction:rtl]",
+          { "border-red-500": Boolean(error) },
           className,
         )}
         {...props}
@@ -43,6 +50,7 @@ function Input({
       {!isLoading && !isError && isSuccess && (
         <CircleCheck className="pointer-events-none absolute left-3 top-1/3 size-5 -translate-y-1/2 text-green-600" />
       )}
+      
       {error && (
         <span className="text-xs text-red-500 absolute bottom-0 right-0">
           {error}

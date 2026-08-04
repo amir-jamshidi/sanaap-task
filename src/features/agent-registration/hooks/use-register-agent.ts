@@ -4,7 +4,9 @@ import {
   getCites,
   getInsuranceBranches,
   getProvinces,
+  registerAgent,
 } from "../api/register-agent";
+import type { RegisterAgentRequest } from "../types/agent-registration.types";
 
 const ONE_HOUR = 60 * 60 * 1000;
 const ONE_DAY = 24 * ONE_HOUR;
@@ -38,5 +40,13 @@ export const useGetInsuranceBranches = (query?: string) => {
     queryKey: ["insurance_branches", query ? query : ""],
     queryFn: () => getInsuranceBranches(query),
     staleTime: ONE_HOUR,
+  });
+};
+
+export const useRegisterAgent = () => {
+  return useMutation({
+    mutationKey: ["register_agent"],
+    mutationFn: (registerDetails: RegisterAgentRequest) =>
+      registerAgent(registerDetails),
   });
 };

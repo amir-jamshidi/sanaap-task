@@ -32,13 +32,14 @@ function Textarea({
         px-2.5
         pb-2
           transition-colors    
-          disabled:pointer-events-none
+          has-[textarea:disabled]:cursor-not-allowed
           has-[textarea:disabled]:bg-input/50
           has-[textarea:disabled]:opacity-50
           has-[textarea[aria-invalid=true]]:border-destructive
           has-[textarea[aria-invalid=true]]:ring-3
           has-[textarea[aria-invalid=true]]:ring-destructive/20
           `,
+          { "border-red-500": Boolean(error) },
           fieldsetClassName,
         )}
       >
