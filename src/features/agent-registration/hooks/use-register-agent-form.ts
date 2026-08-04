@@ -11,12 +11,18 @@ export const useRegisterAgentForm = () => {
   const form = useForm({
     defaultValues: {
       code: "",
+      provinceId: "",
     },
   });
 
   const code = useWatch({
     control: form.control,
     name: "code",
+  });
+
+  const provinceId = useWatch({
+    control: form.control,
+    name: "provinceId",
   });
 
   const debouncedCode = useDebounce(code.trim(), 700);
@@ -31,7 +37,7 @@ export const useRegisterAgentForm = () => {
     data: cities = [],
     isPending: citiesIsPending,
     isError: citiesIsError,
-  } = useGetCitiesByProvinceID(35);
+  } = useGetCitiesByProvinceID(provinceId ? Number(provinceId) : 0);
 
   const {
     mutate: checkAgencyStatus,

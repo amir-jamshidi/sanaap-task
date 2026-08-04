@@ -3,6 +3,7 @@ import type {
   CheckAgencyCodeRequest,
   CheckAgencyCodeResponse,
   City,
+  InsuranceBranchResponse,
   Province,
 } from "../types/agent-registration.types";
 
@@ -22,5 +23,16 @@ export const checkAgencyCodeStatus = (body: CheckAgencyCodeRequest) => {
   return httpClient.post<CheckAgencyCodeResponse, CheckAgencyCodeRequest>(
     "/api/v2/app/DEY/agent/verification/signup/check_agency_code/",
     body,
+  );
+};
+
+export const getInsuranceBranches = (query?: string) => {
+  httpClient.get<InsuranceBranchResponse>(
+    "/api/v2/app/selection_item/insurance_branch/wop_list/",
+    {
+      params: {
+        name: query,
+      },
+    },
   );
 };

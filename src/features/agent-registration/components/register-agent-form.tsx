@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
+import { Controller } from "react-hook-form";
 
 const RegisterAgentForm = () => {
   const { provinceData, citiesData, form, checkAgencyDetails } =
@@ -30,21 +31,33 @@ const RegisterAgentForm = () => {
           isSuccess={checkAgencyDetails.isSuccess}
           placeholder="کد نمایندگی"
         />
-        <Select items={provinceData}>
-          <SelectTrigger>
-            <SelectValue placeholder="استان" />
-          </SelectTrigger>
 
-          <SelectContent side="bottom">
-            <SelectGroup>
-              {provinceData.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <Controller
+          control={form.control}
+          name="provinceId"
+          render={({ field }) => (
+            <Select
+              items={provinceData}
+              value={field.value}
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="استان" />
+              </SelectTrigger>
+
+              <SelectContent side="bottom">
+                <SelectGroup>
+                  {provinceData.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        />
+
         <Select />
         <Select items={citiesData}>
           <SelectTrigger>

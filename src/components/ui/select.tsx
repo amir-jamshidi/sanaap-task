@@ -49,7 +49,7 @@ function SelectTrigger({
           text-sm text-gray-700
           outline-none
           transition-colors
-          
+
           data-[popup-open]:border-primary-500
           data-[popup-open]:ring-0
 
@@ -98,8 +98,9 @@ function SelectContent({
           data-slot="select-content"
           className={cn(
             `
+              max-h-64
               w-full
-              max-h-[var(--available-height)]
+              scrollbar-none
               overflow-x-hidden
               overflow-y-auto
               rounded-lg

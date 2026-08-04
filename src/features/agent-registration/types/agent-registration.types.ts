@@ -53,3 +53,17 @@ export interface CheckAgencyCodeResponse {
 export interface CheckAgencyCodeRequest {
   agent_code: string;
 }
+
+export interface InsuranceBranchResponse {
+  status_code: number;
+  message: string;
+  is_success: true;
+  error_details: null;
+  response: {
+    id: number;
+    name: string;
+    insurance: number;
+    province: number;
+    county: number;
+  }[];
+}

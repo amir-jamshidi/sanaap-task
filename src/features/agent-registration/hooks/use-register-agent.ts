@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   checkAgencyCodeStatus,
   getCites,
+  getInsuranceBranches,
   getProvinces,
 } from "../api/register-agent";
 
@@ -29,5 +30,13 @@ export const useCheckAgencyCodeStatus = () => {
   return useMutation({
     mutationKey: ["agent_status"],
     mutationFn: (agent_code: string) => checkAgencyCodeStatus({ agent_code }),
+  });
+};
+
+export const useGetInsuranceBranches = (query?: string) => {
+  return useQuery({
+    queryKey: ["insurance_branches", query ? query : ""],
+    queryFn: () => getInsuranceBranches(query),
+    staleTime: ONE_HOUR,
   });
 };
