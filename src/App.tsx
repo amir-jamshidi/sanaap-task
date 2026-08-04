@@ -1,6 +1,7 @@
+import AgentRegistrationPage from "./pages/agent-registration-page";
 
 const App = () => {
-  return <div className="">App</div>;
+  return <AgentRegistrationPage/>
 };
 
 export default App;
