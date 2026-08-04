@@ -32,20 +32,23 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
 function SelectTrigger({
   className,
   children,
+  error,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: "sm" | "default";
+  error?: string;
 }) {
   return (
-    <SelectPrimitive.Trigger
-      data-slot="select-trigger"
-      className={cn(
-        `
-          flex h-12 w-full items-center justify-between
-          gap-1.5 rounded-lg
-          border border-gray-400/70
-          bg-transparent
-          px-2.5 py-2
+    <div className="relative pb-6">
+      <SelectPrimitive.Trigger
+        data-slot="select-trigger"
+        className={cn(
+          `
+        flex h-12 w-full items-center justify-between
+        gap-1.5 rounded-lg
+        border border-gray-400/70
+        bg-transparent
+        px-2.5 py-2
           text-sm text-gray-700
           outline-none
           transition-colors
@@ -54,20 +57,27 @@ function SelectTrigger({
           data-[popup-open]:ring-0
 
           disabled:cursor-not-allowed
-          disabled:opacity-50
+          disabled:opacity-75
+          disabled:bg-gray-200
         `,
-        className,
-      )}
-      {...props}
-    >
-      {children}
+          className,
+        )}
+        {...props}
+      >
+        {children}
 
-      <SelectPrimitive.Icon
-        render={
-          <ChevronDownIcon className="pointer-events-none size-4 text-gray-400" />
-        }
-      />
-    </SelectPrimitive.Trigger>
+        <SelectPrimitive.Icon
+          render={
+            <ChevronDownIcon className="pointer-events-none size-4 text-gray-400" />
+          }
+        />
+      </SelectPrimitive.Trigger>
+      {error && (
+        <span className="absolute bottom-0 right-0 text-xs text-red-500">
+          {error}
+        </span>
+      )}
+    </div>
   );
 }
 function SelectContent({
@@ -158,7 +168,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full text-gray-600 hover:bg-gray-200 hover:transition-all h-8 cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full text-gray-600 hover:bg-gray-200 hover:transition-all h-8 cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50  [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
       )}
       {...props}

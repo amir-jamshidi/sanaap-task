@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 type TextareaProps = React.ComponentProps<"textarea"> & {
   legend?: React.ReactNode;
   fieldsetClassName?: string;
+  error?: string;
 };
 
 function Textarea({
   className,
   fieldsetClassName,
   legend,
+  error,
   id,
   ...props
 }: TextareaProps) {
@@ -18,16 +20,17 @@ function Textarea({
   const textareaId = id ?? generatedId;
 
   return (
-    <fieldset
-      className={cn(
-        `
-          min-w-0
-          rounded-lg
-          border
-          border-gray-400/70
-          focus-within:border-primary-500
-          px-2.5
-          pb-2
+    <div className="relative pb-6">
+      <fieldset
+        className={cn(
+          `
+        min-w-0
+        rounded-lg
+        border
+        border-gray-400/70
+        focus-within:border-primary-500
+        px-2.5
+        pb-2
           transition-colors    
           disabled:pointer-events-none
           has-[textarea:disabled]:bg-input/50
@@ -35,21 +38,21 @@ function Textarea({
           has-[textarea[aria-invalid=true]]:border-destructive
           has-[textarea[aria-invalid=true]]:ring-3
           has-[textarea[aria-invalid=true]]:ring-destructive/20
-        `,
-        fieldsetClassName,
-      )}
-    >
-      {legend && (
-        <legend className="px-1 text-sm text-gray-400">
-          <label htmlFor={textareaId}>{legend}</label>
-        </legend>
-      )}
+          `,
+          fieldsetClassName,
+        )}
+      >
+        {legend && (
+          <legend className="px-1 text-sm text-gray-400">
+            <label htmlFor={textareaId}>{legend}</label>
+          </legend>
+        )}
 
-      <textarea
-        id={textareaId}
-        data-slot="textarea"
-        className={cn(
-          `
+        <textarea
+          id={textareaId}
+          data-slot="textarea"
+          className={cn(
+            `
             block
             min-h-24
             w-full
@@ -65,11 +68,17 @@ function Textarea({
             disabled:cursor-not-allowed
             md:text-sm
           `,
-          className,
-        )}
-        {...props}
-      />
-    </fieldset>
+            className,
+          )}
+          {...props}
+        />
+      </fieldset>
+      {error && (
+        <span className="text-xs text-red-500 absolute bottom-0 right-0">
+          {error}
+        </span>
+      )}
+    </div>
   );
 }
 

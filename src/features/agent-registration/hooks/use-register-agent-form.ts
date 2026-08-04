@@ -7,11 +7,17 @@ import {
 } from "./use-register-agent";
 import { useForm, useWatch } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  registerAgentSchema,
+  type RegisterAgentFormValues,
+} from "../schemas/agent-registration-schema";
 
 export const useRegisterAgentForm = () => {
   const [branchSearchQuery, setBranchSearchQuery] = useState("");
 
-  const form = useForm({
+  const form = useForm<RegisterAgentFormValues>({
+    resolver: zodResolver(registerAgentSchema),
     defaultValues: {
       address: "",
       agent_code: "",
@@ -27,9 +33,16 @@ export const useRegisterAgentForm = () => {
     },
   });
 
+  console.log(form.formState.errors)
+
   const code = useWatch({
     control: form.control,
     name: "agent_code",
+  });
+
+  const ciryId = useWatch({
+    control: form.control,
+    name: "county",
   });
 
   const agencyType = useWatch({
@@ -107,6 +120,8 @@ export const useRegisterAgentForm = () => {
     citiesIsError,
 
     form,
+    disableCity: !provinceId || provinceIsPending || citiesIsPending,
+    disableBranch: !ciryId,
 
     isLegalPerson: agencyType === "legal",
 

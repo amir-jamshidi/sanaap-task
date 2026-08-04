@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -11,16 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
 import { Controller } from "react-hook-form";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
+import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
 
 const RegisterAgentForm = () => {
   const {
@@ -30,6 +30,8 @@ const RegisterAgentForm = () => {
     checkAgencyDetails,
     branchDetails,
     isLegalPerson,
+    disableBranch,
+    disableCity,
   } = useRegisterAgentForm();
 
   const submit = (values) => {
@@ -45,10 +47,12 @@ const RegisterAgentForm = () => {
         <div className="flex flex-col gap-y-10 bg-white mx-8 px-6 mt-4 py-8 shadow-lg rounded-xl">
           <Input
             {...form.register("agent_code")}
+            type="number"
             isLoading={checkAgencyDetails.isPending}
             isError={checkAgencyDetails.isError}
             isSuccess={checkAgencyDetails.isSuccess}
             placeholder="کد نمایندگی"
+            error={form.formState.errors.agent_code?.message}
           />
 
           <Controller
@@ -60,7 +64,7 @@ const RegisterAgentForm = () => {
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger>
+                <SelectTrigger error={form.formState.errors.province?.message}>
                   <SelectValue placeholder="استان" />
                 </SelectTrigger>
 
@@ -82,11 +86,12 @@ const RegisterAgentForm = () => {
             name="county"
             render={({ field }) => (
               <Select
+                disabled={disableCity}
                 items={citiesData}
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger>
+                <SelectTrigger error={form.formState.errors.county?.message}>
                   <SelectValue placeholder="شهر" />
                 </SelectTrigger>
 
@@ -102,7 +107,11 @@ const RegisterAgentForm = () => {
               </Select>
             )}
           />
-          <Textarea {...form.register("address")} legend="آدرس" />
+          <Textarea
+            {...form.register("address")}
+            error={form.formState.errors.address?.message}
+            legend="آدرس"
+          />
           <Controller
             control={form.control}
             name="insurance_branch"
@@ -114,6 +123,7 @@ const RegisterAgentForm = () => {
 
               return (
                 <Combobox
+                  disabled={disableBranch}
                   virtualized
                   items={branchDetails.branchOptions}
                   value={selectedBranch}
@@ -131,6 +141,7 @@ const RegisterAgentForm = () => {
                   }}
                 >
                   <ComboboxInput
+                    error={form.formState.errors.insurance_branch?.message}
                     placeholder="جستجو و انتخاب شعبه"
                     showTrigger
                     showClear
@@ -166,11 +177,17 @@ const RegisterAgentForm = () => {
 
           <div className="flex gap-x-4 ">
             <Input
+              error={form.formState.errors.phone?.message}
+              dir="ltr"
+              type="number"
               {...form.register("phone")}
               className="flex-3"
               placeholder="شماره ثابت"
             />
             <Input
+              error={form.formState.errors.city_code?.message}
+              dir="ltr"
+              type="number"
               {...form.register("city_code")}
               className="flex-1"
               placeholder="پیش شماره"
@@ -221,6 +238,7 @@ const RegisterAgentForm = () => {
               {...form.register("name", {
                 shouldUnregister: true,
               })}
+              error={form.formState.errors.name?.message}
               placeholder="نام نمایندگی"
             />
           )}

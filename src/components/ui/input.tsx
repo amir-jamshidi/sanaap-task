@@ -10,14 +10,18 @@ function Input({
   isLoading,
   isError,
   isSuccess,
+  error,
+  wrapperClassName,
   ...props
 }: React.ComponentProps<"input"> & {
   isLoading?: boolean;
   isError?: boolean;
   isSuccess?: boolean;
+  error?: string;
+  wrapperClassName?: string;
 }) {
   return (
-    <div className="relative w-full">
+    <div className={cn("relative w-full pb-6", wrapperClassName)}>
       <InputPrimitive
         type={type}
         data-slot="input"
@@ -29,15 +33,20 @@ function Input({
       />
 
       {isLoading && (
-        <LoaderCircle className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 animate-spin text-gray-500" />
+        <LoaderCircle className="pointer-events-none absolute left-3 top-1/3 size-5 -translate-y-1/2 animate-spin text-gray-500" />
       )}
 
       {!isLoading && isError && (
-        <CircleX className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-red-500" />
+        <CircleX className="pointer-events-none absolute left-3 top-1/3 size-5 -translate-y-1/2 text-red-500" />
       )}
 
       {!isLoading && !isError && isSuccess && (
-        <CircleCheck className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-green-600" />
+        <CircleCheck className="pointer-events-none absolute left-3 top-1/3 size-5 -translate-y-1/2 text-green-600" />
+      )}
+      {error && (
+        <span className="text-xs text-red-500 absolute bottom-0 right-0">
+          {error}
+        </span>
       )}
     </div>
   );
