@@ -368,32 +368,33 @@ function ComboboxContent({
   );
 }
 
-function ComboboxList({
-  className,
-  ...props
-}: ComboboxPrimitive.List.Props) {
-  return (
-    <ComboboxPrimitive.List
-      data-slot="combobox-list"
-      className={cn(
-        `
-          scrollbar-none
-          max-h-64
-          overflow-x-hidden
-          overflow-y-auto
-          overscroll-contain
-          scroll-py-1
-          p-1
-          outline-none!
-          ring-0!
-          data-empty:p-0
-        `,
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const ComboboxList = React.forwardRef<
+  HTMLDivElement,
+  ComboboxPrimitive.List.Props
+>(({ className, ...props }, ref) => (
+  <ComboboxPrimitive.List
+    ref={ref}
+    data-slot="combobox-list"
+    className={cn(
+      `
+        scrollbar-none
+        max-h-64
+        overflow-x-hidden
+        overflow-y-auto
+        overscroll-contain
+        scroll-py-1
+        p-1
+        outline-none!
+        ring-0!
+        data-empty:p-0
+      `,
+      className,
+    )}
+    {...props}
+  />
+));
+
+ComboboxList.displayName = "ComboboxList";
 
 function ComboboxItem({
   className,

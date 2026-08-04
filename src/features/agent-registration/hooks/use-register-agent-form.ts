@@ -24,6 +24,7 @@ import {
 
 export const useRegisterAgentForm = () => {
   const [branchSearchQuery, setBranchSearchQuery] = useState("");
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const isFirstCityChange = useRef(true);
 
   const form = useForm<
@@ -94,6 +95,7 @@ export const useRegisterAgentForm = () => {
 
   const {
     mutate: checkAgencyStatus,
+    mutateAsync: checkAgencyStatusAsync,
     data: agencyStatus,
     isPending: agencyStatusIsPending,
     isError: agencyStatusIsError,
@@ -138,10 +140,12 @@ export const useRegisterAgentForm = () => {
     label: branch.name,
   }));
 
-  const onSubmit: SubmitHandler<RegisterAgentFormValues> = (values) => {
+  const onSubmit: SubmitHandler<RegisterAgentFormValues> = async (values) => {
     console.log("values", values);
 
-    if (agencyStatus?.is_success === false) {
+    const agencyCheck = await checkAgencyStatusAsync(values.agent_code);
+
+    if (agencyCheck.is_success === false) {
       toast.error(`کد نمایندگی ${values.agent_code} قبلا ثبت شده است`);
       return;
     }
@@ -154,7 +158,15 @@ export const useRegisterAgentForm = () => {
       name: values.name || "nameTest",
     };
 
-    registerAgentFn(payload);
+    await registerAgentFn(payload);
+    setIsSuccessModalOpen(true);
+  };
+
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
+    setBranchSearchQuery("");
+    resetAgencyStatus();
+    form.reset();
   };
 
   return {
@@ -162,6 +174,7 @@ export const useRegisterAgentForm = () => {
     disableCity: !provinceId || provinceIsPending || citiesIsFetching,
     disableBranch: !ciryId,
     isSubmitting,
+    isSuccessModalOpen,
     //--
     isLegalPerson: agencyType === "legal",
     //--
@@ -190,5 +203,6 @@ export const useRegisterAgentForm = () => {
       setBranchSearchQuery,
     },
     onSubmit,
+    closeSuccessModal,
   };
 };

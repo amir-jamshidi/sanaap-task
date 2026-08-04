@@ -19,8 +19,65 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import * as React from "react";
 import { Controller } from "react-hook-form";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
+import RegistrationSuccess from "./registration-success";
+
+type BranchOption = {
+  label: string;
+  value: number;
+};
+
+function BranchVirtualizedList({ options }: { options: BranchOption[] }) {
+  const parentRef = React.useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: options.length,
+    getScrollElement: () => parentRef.current,
+    getItemKey: (index) => options[index]?.value ?? index,
+    estimateSize: () => 32,
+    overscan: 8,
+  });
+
+  if (options.length === 0) {
+    return (
+      <>
+        <ComboboxEmpty>شعبه‌ای پیدا نشد</ComboboxEmpty>
+        <ComboboxList />
+      </>
+    );
+  }
+
+  return (
+    <ComboboxList ref={parentRef} className="relative">
+      <div
+        className="relative w-full"
+        style={{ height: virtualizer.getTotalSize() }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => {
+          const option = options[virtualItem.index];
+
+          return (
+            <div
+              key={option.value}
+              className="absolute left-0 top-0 w-full"
+              style={{
+                height: virtualItem.size,
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
+            >
+              <ComboboxItem index={virtualItem.index} value={option}>
+                {option.label}
+              </ComboboxItem>
+            </div>
+          );
+        })}
+      </div>
+    </ComboboxList>
+  );
+}
 
 const RegisterAgentForm = () => {
   const {
@@ -31,9 +88,11 @@ const RegisterAgentForm = () => {
     disableBranch,
     disableCity,
     isSubmitting,
+    isSuccessModalOpen,
     provinceDetails,
     citiesDetails,
     onSubmit,
+    closeSuccessModal,
   } = useRegisterAgentForm();
 
   return (
@@ -123,8 +182,9 @@ const RegisterAgentForm = () => {
             control={form.control}
             name="insurance_branch"
             render={({ field }) => {
+              const branchOptions = branchDetails.branchOptions ?? [];
               const selectedBranch =
-                branchDetails.branchOptions?.find(
+                branchOptions.find(
                   (option) => String(option.value) === String(field.value),
                 ) ?? null;
 
@@ -132,7 +192,7 @@ const RegisterAgentForm = () => {
                 <Combobox
                   disabled={disableBranch || isSubmitting}
                   virtualized
-                  items={branchDetails.branchOptions}
+                  items={branchOptions}
                   value={selectedBranch}
                   filter={null}
                   highlightItemOnHover={false}
@@ -168,17 +228,7 @@ const RegisterAgentForm = () => {
                         دریافت شعبه‌ها ناموفق بود
                       </div>
                     ) : (
-                      <>
-                        <ComboboxEmpty>شعبه‌ای پیدا نشد</ComboboxEmpty>
-
-                        <ComboboxList>
-                          {(option: { label: string; value: number }) => (
-                            <ComboboxItem key={option.value} value={option}>
-                              {option.label}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </>
+                      <BranchVirtualizedList options={branchOptions} />
                     )}
                   </ComboboxContent>
                 </Combobox>
@@ -264,6 +314,10 @@ const RegisterAgentForm = () => {
           </Button>
         </div>
       </form>
+      <RegistrationSuccess
+        open={isSuccessModalOpen}
+        onClose={closeSuccessModal}
+      />
     </div>
   );
 };

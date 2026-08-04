@@ -1,9 +1,41 @@
-import React from 'react'
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-const RegistrationSuccess = () => {
+type RegistrationSuccessProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+const RegistrationSuccess = ({ open, onClose }: RegistrationSuccessProps) => {
   return (
-    <div>RegistrationSuccess</div>
-  )
-}
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) onClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>ثبت نام با موفقیت انجام شد</DialogTitle>
+          <DialogDescription>
+            اطلاعات نمایندگی با موفقیت ثبت شد.
+          </DialogDescription>
+        </DialogHeader>
 
-export default RegistrationSuccess
+        <DialogFooter>
+          <DialogClose render={<Button type="button" />}>بستن</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default RegistrationSuccess;
