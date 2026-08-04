@@ -13,8 +13,8 @@ export const getProvinces = () => {
   return httpClient.get<Province[]>("/base/provinces_wop/");
 };
 
-export const getCites = (provinceId: number) => {
-  return httpClient.get<City[]>("/base/counties_wop/?province=35", {
+export const getCities = (provinceId: number) => {
+  return httpClient.get<City[]>("/base/counties_wop/", {
     params: {
       province: provinceId,
     },

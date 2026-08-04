@@ -50,14 +50,12 @@ export const useRegisterAgentForm = () => {
     },
   });
 
-  console.log(form.formState.errors);
-
   const code = useWatch({
     control: form.control,
     name: "agent_code",
   });
 
-  const ciryId = useWatch({
+  const cityId = useWatch({
     control: form.control,
     name: "county",
   });
@@ -73,13 +71,13 @@ export const useRegisterAgentForm = () => {
   });
 
   const debouncedCode = useDebounce(code.trim(), 700);
-  const debouncedBrachSearchQuery = useDebounce(branchSearchQuery.trim(), 700);
+  const debouncedBranchSearchQuery = useDebounce(branchSearchQuery.trim(), 700);
 
   const {
     data: branchDetails,
     isPending: branchesIsPending,
     isError: branchesIsError,
-  } = useGetInsuranceBranches(debouncedBrachSearchQuery);
+  } = useGetInsuranceBranches(debouncedBranchSearchQuery);
 
   const {
     data: provinces = [],
@@ -104,7 +102,7 @@ export const useRegisterAgentForm = () => {
 
   const { mutateAsync: registerAgentFn, isPending: isSubmitting } =
     useRegisterAgent();
-  console.log(isSubmitting);
+
   useEffect(() => {
     if (!debouncedCode) {
       resetAgencyStatus();
@@ -115,13 +113,18 @@ export const useRegisterAgentForm = () => {
   }, [debouncedCode, checkAgencyStatus, resetAgencyStatus]);
 
   useEffect(() => {
+    form.setValue("county", "");
+    form.setValue("insurance_branch", -1);
+  }, [provinceId, form]);
+
+  useEffect(() => {
     if (isFirstCityChange.current) {
       isFirstCityChange.current = false;
       return;
     }
 
     form.setValue("insurance_branch", -1);
-  }, [ciryId, form]);
+  }, [cityId, form]);
 
   const provinceData =
     provinces?.map((province) => ({
@@ -141,8 +144,6 @@ export const useRegisterAgentForm = () => {
   }));
 
   const onSubmit: SubmitHandler<RegisterAgentFormValues> = async (values) => {
-    console.log("values", values);
-
     const agencyCheck = await checkAgencyStatusAsync(values.agent_code);
 
     if (agencyCheck.is_success === false) {
@@ -172,7 +173,7 @@ export const useRegisterAgentForm = () => {
   return {
     form,
     disableCity: !provinceId || provinceIsPending || citiesIsFetching,
-    disableBranch: !ciryId,
+    disableBranch: !cityId,
     isSubmitting,
     isSuccessModalOpen,
     //--

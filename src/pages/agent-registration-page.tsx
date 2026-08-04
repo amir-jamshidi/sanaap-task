@@ -1,10 +1,10 @@
 import AppLayout from "@/components/app-layout/app-layout";
-import RegisterAgentForm from "@/features/agent-registration/components/register-agent-form";
+import RegisterAgent from "@/features/agent-registration";
 
 const AgentRegistrationPage = () => {
   return (
     <AppLayout>
-      <RegisterAgentForm />
+      <RegisterAgent />
     </AppLayout>
   );
 };

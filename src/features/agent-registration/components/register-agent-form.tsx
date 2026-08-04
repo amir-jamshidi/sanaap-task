@@ -2,10 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Combobox,
   ComboboxContent,
-  ComboboxEmpty,
   ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
 } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,65 +16,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import * as React from "react";
 import { Controller } from "react-hook-form";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
 import RegistrationSuccess from "./registration-success";
-
-type BranchOption = {
-  label: string;
-  value: number;
-};
-
-function BranchVirtualizedList({ options }: { options: BranchOption[] }) {
-  const parentRef = React.useRef<HTMLDivElement>(null);
-
-  const virtualizer = useVirtualizer({
-    count: options.length,
-    getScrollElement: () => parentRef.current,
-    getItemKey: (index) => options[index]?.value ?? index,
-    estimateSize: () => 32,
-    overscan: 8,
-  });
-
-  if (options.length === 0) {
-    return (
-      <>
-        <ComboboxEmpty>شعبه‌ای پیدا نشد</ComboboxEmpty>
-        <ComboboxList />
-      </>
-    );
-  }
-
-  return (
-    <ComboboxList ref={parentRef} className="relative">
-      <div
-        className="relative w-full"
-        style={{ height: virtualizer.getTotalSize() }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
-          const option = options[virtualItem.index];
-
-          return (
-            <div
-              key={option.value}
-              className="absolute left-0 top-0 w-full"
-              style={{
-                height: virtualItem.size,
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              <ComboboxItem index={virtualItem.index} value={option}>
-                {option.label}
-              </ComboboxItem>
-            </div>
-          );
-        })}
-      </div>
-    </ComboboxList>
-  );
-}
+import BranchVirtualizedList from "./branch-virtual-list";
 
 const RegisterAgentForm = () => {
   const {
@@ -103,7 +45,6 @@ const RegisterAgentForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-y-5 bg-white mx-8 px-6 mt-4 py-8 shadow-lg rounded-xl">
           <Input
-            {...form.register("agent_code")}
             type="number"
             isLoading={checkAgencyDetails.isPending}
             isError={checkAgencyDetails.isError}
@@ -111,6 +52,7 @@ const RegisterAgentForm = () => {
             placeholder="کد نمایندگی"
             disabled={checkAgencyDetails.isPending || isSubmitting}
             error={form.formState.errors.agent_code?.message}
+            {...form.register("agent_code")}
           />
 
           <Controller
@@ -238,24 +180,24 @@ const RegisterAgentForm = () => {
 
           <div dir="ltr" className="flex gap-x-4 ">
             <Input
-              error={form.formState.errors.city_code?.message}
               dir="ltr"
               type="number"
-              {...form.register("city_code")}
-              disabled={isSubmitting}
-              className="flex-1"
+              wrapperClassName="flex-2"
               placeholder="پیش شماره"
+              disabled={isSubmitting}
+              error={form.formState.errors.city_code?.message}
               isLtrContent
+              {...form.register("city_code")}
             />
             <Input
-              error={form.formState.errors.phone?.message}
               dir="ltr"
               type="number"
-              {...form.register("phone")}
-              disabled={isSubmitting}
-              className="flex-3"
+              wrapperClassName="flex-5"
               placeholder="شماره ثابت"
+              disabled={isSubmitting}
+              error={form.formState.errors.phone?.message}
               isLtrContent
+              {...form.register("phone")}
             />
           </div>
 
@@ -301,12 +243,12 @@ const RegisterAgentForm = () => {
           </div>
           {isLegalPerson && (
             <Input
+              error={form.formState.errors.name?.message}
+              placeholder="نام نمایندگی"
+              disabled={isSubmitting}
               {...form.register("name", {
                 shouldUnregister: true,
               })}
-              disabled={isSubmitting}
-              error={form.formState.errors.name?.message}
-              placeholder="نام نمایندگی"
             />
           )}
           <Button type="submit" disabled={isSubmitting}>

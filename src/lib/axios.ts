@@ -1,7 +1,7 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 const baseURL = import.meta.env.VITE_APP_BASE_URL;
-import { toast } from "sonner";
 
 if (!baseURL) {
   throw new Error("env.VITE_APP_BASE_URL is not defined");
@@ -44,6 +44,8 @@ instance.interceptors.response.use(
       toast.error("خطایی در سمت سرور رخ داده است");
     } else if (faDetails) {
       toast.error(faDetails);
+    } else {
+      toast.error("در ارتباط با سرور خطایی رخ داده است");
     }
 
     return Promise.reject(error);

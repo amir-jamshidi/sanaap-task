@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   checkAgencyCodeStatus,
-  getCites,
+  getCities,
   getInsuranceBranches,
   getProvinces,
   registerAgent,
@@ -22,7 +22,7 @@ export const useGetProvinces = () => {
 export const useGetCitiesByProvinceID = (provinceId: number) => {
   return useQuery({
     queryKey: ["cities", provinceId],
-    queryFn: () => getCites(provinceId),
+    queryFn: () => getCities(provinceId),
     staleTime: ONE_HOUR,
     enabled: typeof provinceId === "number" && provinceId > 0,
   });
