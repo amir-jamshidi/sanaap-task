@@ -25,7 +25,7 @@ function Textarea({
           rounded-lg
           border
           border-gray-400/70
-          focus-within:border-gray-400
+          focus-within:border-primary-500
           px-2.5
           pb-2
           transition-colors    

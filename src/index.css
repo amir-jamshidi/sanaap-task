@@ -5,7 +5,8 @@
 
 @font-face {
   font-family: "peyda";
-  src: url("./assets/fonts/peyda/woff2/PeydaWebFaNum-Regular.woff2") format("woff2");
+  src: url("./assets/fonts/peyda/woff2/PeydaWebFaNum-Regular.woff2")
+    format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -13,4 +14,20 @@
 
 @theme {
   --font-sans: "peyda", sans-serif;
+
+  --color-primary-50: #ecfeff;
+  --color-primary-100: #cffafe;
+  --color-primary-200: #a5f3fc;
+  --color-primary-300: #67e8f9;
+  --color-primary-400: #22c9d6;
+
+  --color-primary-500: #008e9c;
+
+  --color-primary-600: #007783;
+  --color-primary-700: #05616b;
+  --color-primary-800: #0a4f57;
+  --color-primary-900: #0d4249;
+  --color-primary-950: #022b31;
+
+  --color-primary: #008e9c;
 }
