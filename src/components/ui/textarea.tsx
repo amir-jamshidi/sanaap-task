@@ -1,18 +1,76 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+type TextareaProps = React.ComponentProps<"textarea"> & {
+  legend?: React.ReactNode;
+  fieldsetClassName?: string;
+};
+
+function Textarea({
+  className,
+  fieldsetClassName,
+  legend,
+  id,
+  ...props
+}: TextareaProps) {
+  const generatedId = React.useId();
+  const textareaId = id ?? generatedId;
+
   return (
-    <textarea
-      data-slot="textarea"
+    <fieldset
       className={cn(
-        "flex field-sizing-content min-h-16 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
-        className
+        `
+          min-w-0
+          rounded-lg
+          border
+          border-gray-400/70
+          focus-within:border-gray-400
+          px-2.5
+          pb-2
+          transition-colors    
+          disabled:pointer-events-none
+          has-[textarea:disabled]:bg-input/50
+          has-[textarea:disabled]:opacity-50
+          has-[textarea[aria-invalid=true]]:border-destructive
+          has-[textarea[aria-invalid=true]]:ring-3
+          has-[textarea[aria-invalid=true]]:ring-destructive/20
+        `,
+        fieldsetClassName,
       )}
-      {...props}
-    />
-  )
+    >
+      {legend && (
+        <legend className="px-1 text-sm text-gray-400">
+          <label htmlFor={textareaId}>{legend}</label>
+        </legend>
+      )}
+
+      <textarea
+        id={textareaId}
+        data-slot="textarea"
+        className={cn(
+          `
+            block
+            min-h-24
+            w-full
+            resize-none
+            appearance-none
+            border-0
+            bg-transparent
+            px-0
+            py-1
+            text-base
+            outline-none
+            placeholder:text-muted-foreground
+            disabled:cursor-not-allowed
+            md:text-sm
+          `,
+          className,
+        )}
+        {...props}
+      />
+    </fieldset>
+  );
 }
 
-export { Textarea }
+export { Textarea };

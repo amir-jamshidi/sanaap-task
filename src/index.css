@@ -2,3 +2,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+
+@font-face {
+  font-family: "peyda";
+  src: url("./assets/fonts/peyda/woff2/PeydaWebFaNum-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "peyda", sans-serif;
+}
