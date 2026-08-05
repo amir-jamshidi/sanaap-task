@@ -8,7 +8,7 @@ import * as React from "react";
 
 type BranchOption = {
   label: string;
-  value: number;
+  value: string;
 };
 
 const BranchVirtualizedList = ({ options }: { options: BranchOption[] }) => {

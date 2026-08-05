@@ -1,17 +1,11 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import { isAxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
-import {
-  type Resolver,
-  type SubmitHandler,
-  useForm,
-  useWatch,
-} from "react-hook-form";
+import { useEffect, useState } from "react";
+import { type SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import {
   registerAgentSchema,
-  type RegisterAgentFormInputValues,
   type RegisterAgentFormValues,
 } from "../schemas/agent-registration-schema";
 import type {
@@ -29,25 +23,16 @@ import {
 export const useRegisterAgentForm = () => {
   const [branchSearchQuery, setBranchSearchQuery] = useState("");
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const isFirstCityChange = useRef(true);
 
-  const form = useForm<
-    RegisterAgentFormInputValues,
-    unknown,
-    RegisterAgentFormValues
-  >({
-    resolver: zodResolver(registerAgentSchema) as Resolver<
-      RegisterAgentFormInputValues,
-      unknown,
-      RegisterAgentFormValues
-    >,
+  const form = useForm<RegisterAgentFormValues>({
+    resolver: zodResolver(registerAgentSchema),
     defaultValues: {
       address: "",
       agent_code: "",
       agency_type: "real", // "real"|"legal"
       city_code: "",
       county: "",
-      insurance_branch: -1,
+      insurance_branch: "",
       phone: "",
       province: "",
       name: "",
@@ -119,16 +104,10 @@ export const useRegisterAgentForm = () => {
 
   useEffect(() => {
     form.setValue("county", "");
-    form.setValue("insurance_branch", -1);
   }, [provinceId, form]);
 
   useEffect(() => {
-    if (isFirstCityChange.current) {
-      isFirstCityChange.current = false;
-      return;
-    }
-
-    form.setValue("insurance_branch", -1);
+    form.setValue("insurance_branch", "");
   }, [cityId, form]);
 
   const provinceData =
@@ -144,7 +123,7 @@ export const useRegisterAgentForm = () => {
     })) ?? [];
 
   const branchOptions = branchDetails?.response.map((branch) => ({
-    value: branch.id,
+    value: String(branch.id),
     label: branch.name,
   }));
 

@@ -76,7 +76,7 @@ const RegisterAgentForm = () => {
                 disabled={isSubmitting}
                 items={provinceDetails.provinceData}
                 value={field.value}
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(value ?? "")}
               >
                 <SelectTrigger
                   isLoading={provinceDetails.isPending}
@@ -111,7 +111,7 @@ const RegisterAgentForm = () => {
                     disabled={disableCity || isSubmitting}
                     items={citiesDetails.citiesData}
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => field.onChange(value ?? "")}
                   >
                     <SelectTrigger
                       isLoading={citiesDetails.isPending}
@@ -150,7 +150,7 @@ const RegisterAgentForm = () => {
                   const branchOptions = branchDetails.branchOptions ?? [];
                   const selectedBranch =
                     branchOptions.find(
-                      (option) => String(option.value) === String(field.value),
+                      (option) => option.value === field.value,
                     ) ?? null;
 
                   return (
@@ -162,7 +162,7 @@ const RegisterAgentForm = () => {
                       filter={null}
                       highlightItemOnHover={false}
                       onValueChange={(
-                        option: { label: string; value: number } | null,
+                        option: { label: string; value: string } | null,
                       ) => {
                         field.onChange(option?.value ?? "");
                       }}

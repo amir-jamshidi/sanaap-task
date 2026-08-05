@@ -85,7 +85,7 @@ export interface RegisterAgentRequest {
   city_code: string;
   county: string;
   first_name: string;
-  insurance_branch: number;
+  insurance_branch: string;
   last_name: string;
   phone_number: string;
   phone: string;
