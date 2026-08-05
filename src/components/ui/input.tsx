@@ -3,6 +3,11 @@ import { Input as InputPrimitive } from "@base-ui/react/input";
 import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function Input({
   className,
@@ -12,6 +17,7 @@ function Input({
   isError,
   isSuccess,
   error,
+  statusTooltip,
   wrapperClassName,
   isLtrContent = false,
   ...props 
@@ -20,6 +26,7 @@ function Input({
   isError?: boolean;
   isSuccess?: boolean;
   error?: string;
+  statusTooltip?: string;
   wrapperClassName?: string;
   isLtrContent?:boolean
 }) {
@@ -44,11 +51,17 @@ function Input({
       )}
 
       {!isLoading && isError && (
-        <CircleX className="pointer-events-none absolute left-3 top-1/3 size-5 -translate-y-1/2 text-red-500" />
+        <InputStatusIcon
+          tooltip={statusTooltip}
+          icon={<CircleX className="size-5 text-red-500" />}
+        />
       )}
 
       {!isLoading && !isError && isSuccess && (
-        <CircleCheck className="pointer-events-none absolute left-3 top-1/3 size-5 -translate-y-1/2 text-green-600" />
+        <InputStatusIcon
+          tooltip={statusTooltip}
+          icon={<CircleCheck className="size-5 text-green-600" />}
+        />
       )}
       
       {error && (
@@ -57,6 +70,40 @@ function Input({
         </span>
       )}
     </div>
+  );
+}
+
+function InputStatusIcon({
+  icon,
+  tooltip,
+}: {
+  icon: React.ReactNode;
+  tooltip?: string;
+}) {
+  if (!tooltip) {
+    return (
+      <span className="pointer-events-none absolute left-3 top-1/3 -translate-y-1/2">
+        {icon}
+      </span>
+    );
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        closeOnClick={false}
+        render={
+          <button
+            type="button"
+            aria-label={tooltip}
+            className="absolute left-3 top-1/3 -translate-y-1/2"
+          />
+        }
+      >
+        {icon}
+      </TooltipTrigger>
+      <TooltipContent dir="rtl">{tooltip}</TooltipContent>
+    </Tooltip>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useDebounce } from "@/hooks/useDebounce";
+import { isAxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -13,7 +14,10 @@ import {
   type RegisterAgentFormInputValues,
   type RegisterAgentFormValues,
 } from "../schemas/agent-registration-schema";
-import type { RegisterAgentRequest } from "../types/agent-registration.types";
+import type {
+  CheckAgencyCodeResponse,
+  RegisterAgentRequest,
+} from "../types/agent-registration.types";
 import {
   useCheckAgencyCodeStatus,
   useGetCitiesByProvinceID,
@@ -97,6 +101,7 @@ export const useRegisterAgentForm = () => {
     data: agencyStatus,
     isPending: agencyStatusIsPending,
     isError: agencyStatusIsError,
+    error: agencyStatusError,
     reset: resetAgencyStatus,
   } = useCheckAgencyCodeStatus();
 
@@ -143,6 +148,15 @@ export const useRegisterAgentForm = () => {
     label: branch.name,
   }));
 
+  const agencyStatusErrorData = isAxiosError<CheckAgencyCodeResponse>(
+    agencyStatusError,
+  )
+    ? agencyStatusError.response?.data
+    : undefined;
+  const isAgencyCodeReserved =
+    agencyStatus?.is_success === false ||
+    agencyStatusErrorData?.is_success === false;
+
   const onSubmit: SubmitHandler<RegisterAgentFormValues> = async (values) => {
     const agencyCheck = await checkAgencyStatusAsync(values.agent_code);
 
@@ -174,6 +188,8 @@ export const useRegisterAgentForm = () => {
     form,
     disableCity: !provinceId || provinceIsPending || citiesIsFetching,
     disableBranch: !cityId,
+    isProvinceSelected: Boolean(provinceId),
+    isCitySelected: Boolean(cityId),
     isSubmitting,
     isSuccessModalOpen,
     //--
@@ -193,8 +209,11 @@ export const useRegisterAgentForm = () => {
     //--
     checkAgencyDetails: {
       isPending: agencyStatusIsPending,
-      isError: agencyStatusIsError,
-      isSuccess: agencyStatus?.is_success,
+      isError: agencyStatusIsError || agencyStatus?.is_success === false,
+      isSuccess: agencyStatus?.is_success === true,
+      statusTooltip: isAgencyCodeReserved
+        ? "این کد نمایندگی قبلا ثبت شده"
+        : undefined,
     },
     //--
     branchDetails: {

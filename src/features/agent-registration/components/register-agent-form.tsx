@@ -16,6 +16,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Controller } from "react-hook-form";
 import { useRegisterAgentForm } from "../hooks/use-register-agent-form";
 import RegistrationSuccess from "./registration-success";
@@ -29,6 +34,8 @@ const RegisterAgentForm = () => {
     isLegalPerson,
     disableBranch,
     disableCity,
+    isProvinceSelected,
+    isCitySelected,
     isSubmitting,
     isSuccessModalOpen,
     provinceDetails,
@@ -49,6 +56,12 @@ const RegisterAgentForm = () => {
             isLoading={checkAgencyDetails.isPending}
             isError={checkAgencyDetails.isError}
             isSuccess={checkAgencyDetails.isSuccess}
+            statusTooltip={
+              checkAgencyDetails.statusTooltip ??
+              (checkAgencyDetails.isSuccess
+                ? "این کد نمایندگی مجاز است"
+                : undefined)
+            }
             placeholder="کد نمایندگی"
             disabled={checkAgencyDetails.isPending || isSubmitting}
             error={form.formState.errors.agent_code?.message}
@@ -85,97 +98,119 @@ const RegisterAgentForm = () => {
             )}
           />
 
-          <Controller
-            control={form.control}
-            name="county"
-            render={({ field }) => (
-              <Select
-                disabled={disableCity || isSubmitting}
-                items={citiesDetails.citiesData}
-                value={field.value}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger
-                  isLoading={citiesDetails.isPending}
-                  error={form.formState.errors.county?.message}
-                >
-                  <SelectValue placeholder="شهر" />
-                </SelectTrigger>
+          <Tooltip disabled={isProvinceSelected}>
+            <TooltipTrigger
+              closeOnClick={false}
+              render={<div className="w-full" />}
+            >
+              <Controller
+                control={form.control}
+                name="county"
+                render={({ field }) => (
+                  <Select
+                    disabled={disableCity || isSubmitting}
+                    items={citiesDetails.citiesData}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      isLoading={citiesDetails.isPending}
+                      error={form.formState.errors.county?.message}
+                    >
+                      <SelectValue placeholder="شهر" />
+                    </SelectTrigger>
 
-                <SelectContent side="bottom">
-                  <SelectGroup>
-                    {citiesDetails.citiesData.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
+                    <SelectContent side="bottom">
+                      <SelectGroup>
+                        {citiesDetails.citiesData.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent dir="rtl">
+              لطفا ابتدا استان مورد نظر را انتخاب کنید
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip disabled={isCitySelected}>
+            <TooltipTrigger
+              closeOnClick={false}
+              render={<div className="w-full" />}
+            >
+              <Controller
+                control={form.control}
+                name="insurance_branch"
+                render={({ field }) => {
+                  const branchOptions = branchDetails.branchOptions ?? [];
+                  const selectedBranch =
+                    branchOptions.find(
+                      (option) => String(option.value) === String(field.value),
+                    ) ?? null;
+
+                  return (
+                    <Combobox
+                      disabled={disableBranch || isSubmitting}
+                      virtualized
+                      items={branchOptions}
+                      value={selectedBranch}
+                      filter={null}
+                      highlightItemOnHover={false}
+                      onValueChange={(
+                        option: { label: string; value: number } | null,
+                      ) => {
+                        field.onChange(option?.value ?? "");
+                      }}
+                      onInputValueChange={(search, { reason }) => {
+                        if (reason === "item-press") return;
+
+                        branchDetails.setBranchSearchQuery(search);
+                      }}
+                    >
+                      <ComboboxInput
+                        isLoading={branchDetails.isPending}
+                        disabled={
+                          disableBranch || branchDetails.isPending || isSubmitting
+                        }
+                        error={form.formState.errors.insurance_branch?.message}
+                        placeholder="جستجو و انتخاب شعبه"
+                        showTrigger
+                        showClear
+                      />
+
+                      <ComboboxContent>
+                        {branchDetails.isPending ? (
+                          <div className="px-3 py-2 text-sm text-gray-500">
+                            در حال جستجو...
+                          </div>
+                        ) : branchDetails.isError ? (
+                          <div className="px-3 py-2 text-sm text-red-500">
+                            دریافت شعبه‌ها ناموفق بود
+                          </div>
+                        ) : (
+                          <BranchVirtualizedList options={branchOptions} />
+                        )}
+                      </ComboboxContent>
+                    </Combobox>
+                  );
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent dir="rtl">
+              لطفا ابتدا شهر مورد نظر را انتخاب کنید
+            </TooltipContent>
+          </Tooltip>
+
           <Textarea
             {...form.register("address")}
             disabled={isSubmitting}
             error={form.formState.errors.address?.message}
             legend="آدرس"
-          />
-          <Controller
-            control={form.control}
-            name="insurance_branch"
-            render={({ field }) => {
-              const branchOptions = branchDetails.branchOptions ?? [];
-              const selectedBranch =
-                branchOptions.find(
-                  (option) => String(option.value) === String(field.value),
-                ) ?? null;
-
-              return (
-                <Combobox
-                  disabled={disableBranch || isSubmitting}
-                  virtualized
-                  items={branchOptions}
-                  value={selectedBranch}
-                  filter={null}
-                  highlightItemOnHover={false}
-                  onValueChange={(
-                    option: { label: string; value: number } | null,
-                  ) => {
-                    field.onChange(option?.value ?? "");
-                  }}
-                  onInputValueChange={(search, { reason }) => {
-                    if (reason === "item-press") return;
-
-                    branchDetails.setBranchSearchQuery(search);
-                  }}
-                >
-                  <ComboboxInput
-                    isLoading={branchDetails.isPending}
-                    disabled={
-                      disableBranch || branchDetails.isPending || isSubmitting
-                    }
-                    error={form.formState.errors.insurance_branch?.message}
-                    placeholder="جستجو و انتخاب شعبه"
-                    showTrigger
-                    showClear
-                  />
-
-                  <ComboboxContent>
-                    {branchDetails.isPending ? (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        در حال جستجو...
-                      </div>
-                    ) : branchDetails.isError ? (
-                      <div className="px-3 py-2 text-sm text-red-500">
-                        دریافت شعبه‌ها ناموفق بود
-                      </div>
-                    ) : (
-                      <BranchVirtualizedList options={branchOptions} />
-                    )}
-                  </ComboboxContent>
-                </Combobox>
-              );
-            }}
           />
 
           <div dir="ltr" className="flex gap-x-4 ">
